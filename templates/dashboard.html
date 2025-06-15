@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Genshin Wish Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <h1 class="text-4xl font-bold mb-8 text-center text-genshin-gold">Traveler Dashboard</h1>
+    
+    <!-- Stats Overview -->
+    <div class="grid md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20 text-center">
+            <div class="text-3xl font-bold text-genshin-gold" id="total-wishes">0</div>
+            <div class="text-gray-300">Total Wishes</div>
+        </div>
+        
+        <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20 text-center">
+            <div class="text-3xl font-bold text-star-5" id="five-star-count">0</div>
+            <div class="text-gray-300">5★ Characters/Weapons</div>
+        </div>
+        
+        <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20 text-center">
+            <div class="text-3xl font-bold text-star-4" id="four-star-count">0</div>
+            <div class="text-gray-300">4★ Characters/Weapons</div>
+        </div>
+        
+        <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20 text-center">
+            <div class="text-3xl font-bold text-genshin-blue" id="luck-rate">0%</div>
+            <div class="text-gray-300">5★ Rate</div>
+        </div>
+    </div>
+    
+    <!-- Pity Counters -->
+    <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20 mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-genshin-gold">Current Pity Status</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+            <div class="text-center">
+                <div class="text-xl font-bold text-pink-400">Character Banner</div>
+                <div class="text-2xl" id="character-pity">0</div>
+                <div class="text-sm text-gray-400">pulls since last 5★</div>
+            </div>
+            <div class="text-center">
+                <div class="text-xl font-bold text-yellow-400">Weapon Banner</div>
+                <div class="text-2xl" id="weapon-pity">0</div>
+                <div class="text-sm text-gray-400">pulls since last 5★</div>
+            </div>
+            <div class="text-center">
+                <div class="text-xl font-bold text-blue-400">Standard Banner</div>
+                <div class="text-2xl" id="standard-pity">0</div>
+                <div class="text-sm text-gray-400">pulls since last 5★</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Pulls -->
+    <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20 mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-genshin-gold">Recent Pulls</h2>
+        <div id="recent-pulls" class="space-y-2">
+            <!-- Recent pulls will be loaded here -->
+        </div>
+        <div class="text-center mt-4">
+            <a href="/wish" class="bg-gradient-to-r from-genshin-gold to-yellow-600 text-black px-6 py-2 rounded-lg font-bold hover:from-yellow-400 hover:to-genshin-gold transition-all">
+                Make a Wish
+            </a>
+        </div>
+    </div>
+    
+    <!-- Pull History Chart -->
+    <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20">
+        <h2 class="text-2xl font-bold mb-4 text-genshin-gold">Pull History</h2>
+        <canvas id="pullChart" width="400" height="200"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadStats();
+    loadRecentPulls();
+});
+
+async function loadStats() {
+    try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        
+        document.getElementById('total-wishes').textContent = data.total_wishes;
+        document.getElementById('five-star-count').textContent = data.five_star_count;
+        document.getElementById('four-star-count').textContent = data.four_star_count;
+        document.getElementById('luck-rate').textContent = data.luck_rate + '%';
+        
+        // Update pity counters
+        if (data.pity_counts) {
+            document.getElementById('character-pity').textContent = data.pity_counts.character || 0;
+            document.getElementById('weapon-pity').textContent = data.pity_counts.weapon || 0;
+            document.getElementById('standard-pity').textContent = data.pity_counts.standard || 0;
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+
+async function loadRecentPulls() {
+    try {
+        const response = await fetch('/api/history?page=1');
+        const data = await response.json();
+        
+        const recentPullsDiv = document.getElementById('recent-pulls');
+        recentPullsDiv.innerHTML = '';
+        
+        if (data.wishes.length === 0) {
+            recentPullsDiv.innerHTML = '<p class="text-gray-400 text-center">No pulls yet. Start wishing!</p>';
+            return;
+        }
+        
+        data.wishes.slice(0, 5).forEach(wish => {
+            const pullDiv = document.createElement('div');
+            pullDiv.className = `flex justify-between items-center p-3 rounded-lg star-${wish.rarity}`;
+            pullDiv.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="text-lg font-bold">${'★'.repeat(wish.rarity)}</div>
+                    <div>
+                        <div class="font-bold">${wish.item_name}</div>
+                        <div class="text-sm opacity-80">${wish.type} • ${wish.banner_type}</div>
+                    </div>
+                </div>
+                <div class="text-sm opacity-80">
+                    ${new Date(wish.timestamp).toLocaleDateString()}
+                </div>
+            `;
+            recentPullsDiv.appendChild(pullDiv);
+        });
+    } catch (error) {
+        console.error('Error loading recent pulls:', error);
+    }
+}
+</script>
+{% endblock %}

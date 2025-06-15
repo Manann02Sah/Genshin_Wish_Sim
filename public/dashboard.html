@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Genshin Impact Wish Simulator</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="dashboard-page">
+    <div class="stars-bg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-icon">⭐</div>
+                <span class="logo-text">Genshin Wish Simulator</span>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard" class="nav-link active">Dashboard</a>
+                <a href="/wish" class="nav-link">Wish</a>
+                <button id="logoutBtn" class="nav-link">Logout</button>
+                <span id="username" class="nav-username"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Traveler Dashboard</h1>
+            <p class="dashboard-subtitle">Your journey through Teyvat</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="total-wishes">0</div>
+                    <div class="stat-label">Total Wishes</div>
+                </div>
+            </div>
+            
+            <div class="stat-card star-5">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="five-star-count">0</div>
+                    <div class="stat-label">5★ Items</div>
+                </div>
+            </div>
+            
+            <div class="stat-card star-4">
+                <div class="stat-icon">✨</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="four-star-count">0</div>
+                    <div class="stat-label">4★ Items</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🍀</div>
+                <div class="stat-content">
+                    <div class="stat-value" id="luck-rate">0%</div>
+                    <div class="stat-label">5★ Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pity Status -->
+        <div class="pity-section">
+            <h2 class="section-title">Pity Status</h2>
+            <div class="pity-grid">
+                <div class="pity-card character-banner">
+                    <div class="pity-header">
+                        <h3>Character Event Wish</h3>
+                        <div class="pity-icon">👤</div>
+                    </div>
+                    <div class="pity-counter">
+                        <span class="pity-number" id="character-pity">0</span>
+                        <span class="pity-label">/ 90</span>
+                    </div>
+                    <div class="pity-bar">
+                        <div class="pity-progress" id="character-progress"></div>
+                    </div>
+                </div>
+
+                <div class="pity-card weapon-banner">
+                    <div class="pity-header">
+                        <h3>Weapon Event Wish</h3>
+                        <div class="pity-icon">⚔️</div>
+                    </div>
+                    <div class="pity-counter">
+                        <span class="pity-number" id="weapon-pity">0</span>
+                        <span class="pity-label">/ 80</span>
+                    </div>
+                    <div class="pity-bar">
+                        <div class="pity-progress" id="weapon-progress"></div>
+                    </div>
+                </div>
+
+                <div class="pity-card standard-banner">
+                    <div class="pity-header">
+                        <h3>Standard Wish</h3>
+                        <div class="pity-icon">🌟</div>
+                    </div>
+                    <div class="pity-counter">
+                        <span class="pity-number" id="standard-pity">0</span>
+                        <span class="pity-label">/ 90</span>
+                    </div>
+                    <div class="pity-bar">
+                        <div class="pity-progress" id="standard-progress"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Pulls -->
+        <div class="recent-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Pulls</h2>
+                <a href="/wish" class="btn btn-primary">
+                    <span class="btn-text">Make a Wish</span>
+                </a>
+            </div>
+            <div id="recent-pulls" class="recent-pulls">
+                <!-- Recent pulls will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wish - Genshin Impact Wish Simulator</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="wish-page">
+    <div class="stars-bg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="logo-icon">⭐</div>
+                <span class="logo-text">Genshin Wish Simulator</span>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/wish" class="nav-link active">Wish</a>
+                <button id="logoutBtn" class="nav-link">Logout</button>
+                <span id="username" class="nav-username"></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="wish-container">
+        <div class="wish-header">
+            <h1 class="wish-title">Make a Wish</h1>
+            <p class="wish-subtitle">May fortune smile upon you, Traveler</p>
+        </div>
+
+        <!-- Banner Selection -->
+        <div class="banner-selection">
+            <div class="banner-card character-banner" data-banner="character">
+                <div class="banner-bg"></div>
+                <div class="banner-content">
+                    <div class="banner-header">
+                        <h3 class="banner-title">Character Event Wish</h3>
+                        <div class="banner-subtitle">Ballad in Goblets</div>
+                    </div>
+                    <div class="banner-info">
+                        <div class="banner-rate">5★ Rate: 0.6%</div>
+                        <div class="banner-pity">Hard Pity: 90</div>
+                        <div class="banner-feature">50/50 System</div>
+                    </div>
+                </div>
+                <div class="banner-characters">
+                    <div class="banner-char">🔥</div>
+                </div>
+            </div>
+
+            <div class="banner-card weapon-banner" data-banner="weapon">
+                <div class="banner-bg"></div>
+                <div class="banner-content">
+                    <div class="banner-header">
+                        <h3 class="banner-title">Weapon Event Wish</h3>
+                        <div class="banner-subtitle">Epitome Invocation</div>
+                    </div>
+                    <div class="banner-info">
+                        <div class="banner-rate">5★ Rate: 0.7%</div>
+                        <div class="banner-pity">Hard Pity: 80</div>
+                        <div class="banner-feature">Epitomized Path</div>
+                    </div>
+                </div>
+                <div class="banner-weapons">
+                    <div class="banner-weapon">⚔️</div>
+                </div>
+            </div>
+
+            <div class="banner-card standard-banner" data-banner="standard">
+                <div class="banner-bg"></div>
+                <div class="banner-content">
+                    <div class="banner-header">
+                        <h3 class="banner-title">Wanderlust Invocation</h3>
+                        <div class="banner-subtitle">Standard Wish</div>
+                    </div>
+                    <div class="banner-info">
+                        <div class="banner-rate">5★ Rate: 0.6%</div>
+                        <div class="banner-pity">Hard Pity: 90</div>
+                        <div class="banner-feature">No Rate-Up</div>
+                    </div>
+                </div>
+                <div class="banner-standard">
+                    <div class="banner-char">💧</div>
+                    <div class="banner-weapon">🏹</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wish Controls -->
+        <div class="wish-controls">
+            <div class="selected-banner-info">
+                <h3 id="selected-banner-name">Select a Banner</h3>
+                <p id="selected-banner-desc">Choose a banner to start wishing</p>
+            </div>
+            
+            <div class="wish-buttons">
+                <button id="wish-1" class="btn btn-secondary btn-wish" disabled>
+                    <span class="btn-text">Wish ×1</span>
+                    <div class="wish-cost">
+                        <span class="fate-icon">🎫</span>
+                        <span>1</span>
+                    </div>
+                </button>
+                <button id="wish-10" class="btn btn-primary btn-wish" disabled>
+                    <span class="btn-text">Wish ×10</span>
+                    <div class="wish-cost">
+                        <span class="fate-icon">🎫</span>
+                        <span>10</span>
+                    </div>
+                    <div class="btn-glow"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Wish Results Modal -->
+        <div id="wish-results-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Wish Results</h3>
+                    <button id="close-results" class="modal-close">×</button>
+                </div>
+                <div id="results-container" class="results-container">
+                    <!-- Results will be displayed here -->
+                </div>
+                <div class="modal-footer">
+                    <button id="wish-again" class="btn btn-primary">
+                        <span class="btn-text">Wish Again</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pull History -->
+        <div class="history-section">
+            <div class="section-header">
+                <h2 class="section-title">Pull History</h2>
+                <div class="history-filters">
+                    <select id="banner-filter" class="filter-select">
+                        <option value="">All Banners</option>
+                        <option value="character">Character</option>
+                        <option value="weapon">Weapon</option>
+                        <option value="standard">Standard</option>
+                    </select>
+                    <select id="rarity-filter" class="filter-select">
+                        <option value="">All Rarities</option>
+                        <option value="5">5★ Only</option>
+                        <option value="4">4★ Only</option>
+                        <option value="3">3★ Only</option>
+                    </select>
+                </div>
+            </div>
+            <div id="history-container" class="history-container">
+                <!-- History will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/wish.js"></script>
+</body>
+</html>

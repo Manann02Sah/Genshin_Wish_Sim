@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Genshin Impact Wish Simulator{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'genshin-blue': '#4A90E2',
+                        'genshin-gold': '#FFD700',
+                        'genshin-purple': '#9B59B6',
+                        'star-5': '#FFB347',
+                        'star-4': '#DDA0DD',
+                        'star-3': '#87CEEB'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .star-5 { background: linear-gradient(45deg, #FFB347, #FF8C00); }
+        .star-4 { background: linear-gradient(45deg, #DDA0DD, #9370DB); }
+        .star-3 { background: linear-gradient(45deg, #87CEEB, #4682B4); }
+        .wish-animation {
+            animation: wishPull 0.8s ease-in-out;
+        }
+        @keyframes wishPull {
+            0% { transform: scale(0.8) rotate(-5deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(2deg); opacity: 0.8; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 min-h-screen text-white">
+    <nav class="bg-black bg-opacity-50 backdrop-blur-sm border-b border-white border-opacity-20">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-genshin-gold">Genshin Wish Simulator</h1>
+                <div class="space-x-4">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="hover:text-genshin-gold transition-colors">Dashboard</a>
+                        <a href="{{ url_for('wish') }}" class="hover:text-genshin-gold transition-colors">Wish</a>
+                        <a href="{{ url_for('logout') }}" class="hover:text-genshin-gold transition-colors">Logout</a>
+                        <span class="text-genshin-blue">Welcome, {{ current_user.username }}!</span>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="hover:text-genshin-gold transition-colors">Login</a>
+                        <a href="{{ url_for('register') }}" class="hover:text-genshin-gold transition-colors">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                        <div class="bg-red-500 bg-opacity-80 text-white px-4 py-2 rounded-lg mb-2">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Wish - Genshin Wish Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <h1 class="text-4xl font-bold mb-8 text-center text-genshin-gold">Make a Wish</h1>
+    
+    <!-- Banner Selection -->
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+        <div class="banner-card bg-gradient-to-br from-pink-600 to-purple-700 p-6 rounded-xl border-2 border-transparent hover:border-pink-400 cursor-pointer transition-all" 
+             data-banner="character">
+            <h3 class="text-2xl font-bold mb-2">Character Event Wish</h3>
+            <p class="text-sm opacity-90 mb-4">Featured 5★ Character Rate-Up</p>
+            <div class="text-xs opacity-75">
+                • 5★ Rate: 0.6% (Hard pity: 90)<br>
+                • 50/50 system applies<br>
+                • Guaranteed featured after losing 50/50
+            </div>
+        </div>
+        
+        <div class="banner-card bg-gradient-to-br from-yellow-600 to-orange-700 p-6 rounded-xl border-2 border-transparent hover:border-yellow-400 cursor-pointer transition-all" 
+             data-banner="weapon">
+            <h3 class="text-2xl font-bold mb-2">Weapon Event Wish</h3>
+            <p class="text-sm opacity-90 mb-4">Featured 5★ Weapon Rate-Up</p>
+            <div class="text-xs opacity-75">
+                • 5★ Rate: 0.7% (Hard pity: 80)<br>
+                • Epitomized Path system<br>
+                • Choose your path to guarantee
+            </div>
+        </div>
+        
+        <div class="banner-card bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-xl border-2 border-transparent hover:border-blue-400 cursor-pointer transition-all" 
+             data-banner="standard">
+            <h3 class="text-2xl font-bold mb-2">Wanderlust Invocation</h3>
+            <p class="text-sm opacity-90 mb-4">Standard Characters & Weapons</p>
+            <div class="text-xs opacity-75">
+                • 5★ Rate: 0.6% (Hard pity: 90)<br>
+                • No rate-up characters<br>
+                • Standard 5★ pool only
+            </div>
+        </div>
+    </div>
+    
+    <!-- Wish Controls -->
+    <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20 mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div>
+                <h3 class="text-xl font-bold mb-2" id="selected-banner">Select a Banner</h3>
+                <p class="text-gray-300" id="banner-description">Choose a banner to start wishing</p>
+            </div>
+            
+            <div class="flex space-x-4">
+                <button id="wish-1" class="bg-gradient-to-r from-genshin-blue to-blue-600 px-6 py-3 rounded-lg font-bold hover:from-blue-400 hover:to-genshin-blue transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Wish ×1
+                </button>
+                <button id="wish-10" class="bg-gradient-to-r from-genshin-gold to-yellow-600 text-black px-6 py-3 rounded-lg font-bold hover:from-yellow-400 hover:to-genshin-gold transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Wish ×10
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Wish Results -->
+    <div id="wish-results" class="hidden bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20 mb-8">
+        <h3 class="text-2xl font-bold mb-4 text-genshin-gold">Wish Results</h3>
+        <div id="results-container" class="grid gap-4">
+            <!-- Results will be displayed here -->
+        </div>
+        <div class="text-center mt-6">
+            <button id="wish-again" class="bg-gradient-to-r from-genshin-purple to-purple-600 px-6 py-3 rounded-lg font-bold hover:from-purple-400 hover:to-genshin-purple transition-all">
+                Wish Again
+            </button>
+        </div>
+    </div>
+    
+    <!-- Pull History -->
+    <div class="bg-black bg-opacity-40 p-6 rounded-xl border border-white border-opacity-20">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-2xl font-bold text-genshin-gold">Pull History</h3>
+            <div class="flex space-x-2">
+                <select id="banner-filter" class="bg-white bg-opacity-10 border border-white border-opacity-30 rounded px-3 py-1 text-white">
+                    <option value="">All Banners</option>
+                    <option value="character">Character</option>
+                    <option value="weapon">Weapon</option>
+                    <option value="standard">Standard</option>
+                </select>
+                <select id="rarity-filter" class="bg-white bg-opacity-10 border border-white border-opacity-30 rounded px-3 py-1 text-white">
+                    <option value="">All Rarities</option>
+                    <option value="5">5★ Only</option>
+                    <option value="4">4★ Only</option>
+                    <option value="3">3★ Only</option>
+                </select>
+            </div>
+        </div>
+        <div id="history-container" class="space-y-2 max-h-96 overflow-y-auto">
+            <!-- History will be loaded here -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedBanner = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeBannerSelection();
+    loadHistory();
+    
+    document.getElementById('wish-1').addEventListener('click', () => makeWish(1));
+    document.getElementById('wish-10').addEventListener('click', () => makeWish(10));
+    document.getElementById('wish-again').addEventListener('click', hideResults);
+    
+    document.getElementById('banner-filter').addEventListener('change', loadHistory);
+    document.getElementById('rarity-filter').addEventListener('change', loadHistory);
+});
+
+function initializeBannerSelection() {
+    const bannerCards = document.querySelectorAll('.banner-card');
+    
+    bannerCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove active class from all cards
+            bannerCards.forEach(c => c.classList.remove('border-genshin-gold', 'bg-opacity-80'));
+            
+            // Add active class to selected card
+            this.classList.add('border-genshin-gold', 'bg-opacity-80');
+            
+            selectedBanner = this.dataset.banner;
+            updateBannerInfo();
+            
+            // Enable wish buttons
+            document.getElementById('wish-1').disabled = false;
+            document.getElementById('wish-10').disabled = false;
+        });
+    });
+}
+
+function updateBannerInfo() {
+    const bannerNames = {
+        'character': 'Character Event Wish',
+        'weapon': 'Weapon Event Wish',
+        'standard': 'Wanderlust Invocation'
+    };
+    
+    const descriptions = {
+        'character': 'Featured 5★ character with 50/50 system',
+        'weapon': 'Featured 5★ weapons with Epitomized Path',
+        'standard': 'Standard characters and weapons'
+    };
+    
+    document.getElementById('selected-banner').textContent = bannerNames[selectedBanner];
+    document.getElementById('banner-description').textContent = descriptions[selectedBanner];
+}
+
+async function makeWish(count) {
+    if (!selectedBanner) return;
+    
+    // Disable buttons during wish
+    document.getElementById('wish-1').disabled = true;
+    document.getElementById('wish-10').disabled = true;
+    
+    try {
+        const response = await fetch('/api/wish', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                banner_type: selectedBanner,
+                count: count
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResults(data.results);
+            loadHistory(); // Refresh history
+        } else {
+            alert('Wish failed: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error making wish:', error);
+        alert('An error occurred while making the wish');
+    } finally {
+        // Re-enable buttons
+        document.getElementById('wish-1').disabled = false;
+        document.getElementById('wish-10').disabled = false;
+    }
+}
+
+function displayResults(results) {
+    const resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '';
+    
+    results.forEach((result, index) => {
+        const resultDiv = document.createElement('div');
+        resultDiv.className = `wish-animation star-${result.rarity} p-4 rounded-lg border-2 border-white border-opacity-30`;
+        resultDiv.style.animationDelay = `${index * 0.1}s`;
+        
+        resultDiv.innerHTML = `
+            <div class="flex justify-between items-center">
+                <div>
+                    <div class="text-lg font-bold">${'★'.repeat(result.rarity)} ${result.name}</div>
+                    <div class="text-sm opacity-80">${result.type}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm">Pity: ${result.pity_count}</div>
+                    ${result.rarity === 5 ? '<div class="text-xs text-yellow-300">✨ 5-Star!</div>' : ''}
+                </div>
+            </div>
+        `;
+        
+        resultsContainer.appendChild(resultDiv);
+    });
+    
+    document.getElementById('wish-results').classList.remove('hidden');
+}
+
+function hideResults() {
+    document.getElementById('wish-results').classList.add('hidden');
+}
+
+async function loadHistory() {
+    const bannerFilter = document.getElementById('banner-filter').value;
+    const rarityFilter = document.getElementById('rarity-filter').value;
+    
+    try {
+        let url = '/api/history?page=1';
+        if (bannerFilter) url += `&banner=${bannerFilter}`;
+        if (rarityFilter) url += `&rarity=${rarityFilter}`;
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        const historyContainer = document.getElementById('history-container');
+        historyContainer.innerHTML = '';
+        
+        if (data.wishes.length === 0) {
+            historyContainer.innerHTML = '<p class="text-gray-400 text-center py-4">No wishes found</p>';
+            return;
+        }
+        
+        data.wishes.forEach(wish => {
+            const wishDiv = document.createElement('div');
+            wishDiv.className = `flex justify-between items-center p-3 rounded-lg star-${wish.rarity}`;
+            
+            wishDiv.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="text-lg font-bold">${'★'.repeat(wish.rarity)}</div>
+                    <div>
+                        <div class="font-bold">${wish.item_name}</div>
+                        <div class="text-sm opacity-80">${wish.type} • ${wish.banner_type}</div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm">${new Date(wish.timestamp).toLocaleDateString()}</div>
+                    <div class="text-xs opacity-80">Pity: ${wish.pity_count}</div>
+                </div>
+            `;
+            
+            historyContainer.appendChild(wishDiv);
+        });
+    } catch (error) {
+        console.error('Error loading history:', error);
+    }
+}
+</script>
+{% endblock %}
