@@ -117,7 +117,7 @@ npm run dev
 - No 50/50 system - all pulls are from standard pool
 
 ## 📁 Project Structure
-
+```
 \`\`\`
 genshin-wish-simulator/
 ├── server.js              # Main server file
@@ -140,7 +140,7 @@ genshin-wish-simulator/
         ├── weapons/      # Weapon images
         └── ui/          # UI elements
 \`\`\`
-
+```
 ## 🎨 Customization
 
 ### Adding New Characters/Weapons
