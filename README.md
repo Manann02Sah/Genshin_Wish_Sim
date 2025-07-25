@@ -1,6 +1,6 @@
 # 🌟 Genshin Impact Wish Simulator
 
-An authentic Genshin Impact wish simulator built with Node.js, featuring real characters and weapons from the game with accurate wishing mechanics.
+An Genshin Impact wish simulator built with Node.js, featuring real characters and weapons from the game with accurate wishing mechanics.
 
 ## ✨ Features
 
@@ -34,10 +34,6 @@ An authentic Genshin Impact wish simulator built with Node.js, featuring real ch
 - **Star Rarity System**: Visual indicators for 3★, 4★, and 5★ items
 
 ## 🚀 Quick Start
-
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
 
 ### Installation
 
